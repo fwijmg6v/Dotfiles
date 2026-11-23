@@ -3,8 +3,9 @@ $fg: #E6F0FA;
 $dim: #8DA0B0;
 $accent: #BCE3FF;
 $ink: #090A0F;
-$bar: rgba(9, 10, 15, 0.45); // frosted by the Hyprland blur layer rule
-$panel: rgba(14, 17, 24, 0.72);
+// bar, dock, menus and control center; frosted by the Hyprland blur layer rule.
+// Keep the alpha above its ignore_alpha (0.3, hypr/modules/windowrules.lua) or the blur drops out.
+$bar: rgba(9, 10, 15, 0.45);
 $hover: rgba(230, 240, 250, 0.12);
 $card: rgba(230, 240, 250, 0.07);
 $line: rgba(230, 240, 250, 0.10);
@@ -86,7 +87,7 @@ window.power, window.go { background-color: transparent; }
   margin: 4px;
   padding: 5px;
   border-radius: 10px;
-  background-color: $panel;
+  background-color: $bar;
   border: 1px solid $line;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
@@ -110,7 +111,7 @@ window.cc { background-color: transparent; }
   margin: 4px;
   padding: 12px;
   border-radius: 16px;
-  background-color: $panel;
+  background-color: $bar;
   border: 1px solid $line;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
