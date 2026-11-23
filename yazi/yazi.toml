@@ -2,4 +2,7 @@
 [opener]
 edit = [{ run = "nvim %s", block = true, for = "unix" }]
 [open]
-rules = [{ mime = "text/*", use = "edit" }]
+# prepend: text opens in nvim right here; everything else keeps yazi's built-in
+# rules (xdg-open -> ~/.config/mimeapps.list: imv, zathura, LibreOffice; mpv for
+# media; "Extract here" for archives). `rules` would replace those entirely.
+prepend_rules = [{ mime = "text/*", use = "edit" }]
