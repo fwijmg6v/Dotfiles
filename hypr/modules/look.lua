@@ -48,23 +48,31 @@ hl.config({
 
 		blur = {
 			enabled = true,
-			size = 3, -- bumped from 1: actually visible frosted-glass now
+			size = 6, -- was 3; Apple materials blur the backdrop heavily
 			passes = 3, -- 3-4 passes gives that silky, diffused frosted glass look
 			new_optimizations = true,
 
-			-- Variant
-			variant = "haze",
+			-- Variant (try others live with ../scripts/blur-try)
+			variant = "acrylic",
+			-- Apple-style glass: mostly frosted, a thin lens at the edges that
+			-- bends the backdrop, a barely visible colour fringe, faint ice tint
+			acrylic = {
+				clarity = 0.3, -- share of sharp backdrop; default 0.82 is nearly clear glass
+				bulb = 24, -- width of the curved edge in px (default 48)
+				refraction = 14, -- how far the edge bends the backdrop in px (default 24)
+				aberration = 0.01, -- colour fringe at the edge (default 0.025)
+				tint = "rgba(E6F0FA14)", -- $fg at 8%; alpha = how much it tints
+			},
 			haze = {
-
 				intensity = 0,
 				iridescence = 0,
 			},
-			-- Softening & Color Balance
-			vibrancy = 1, -- Keeps colors natural without oversaturating
+			-- Softening & Color Balance (was vibrancy 1, brightness 0.4, contrast 2, noise 0.03)
+			vibrancy = 0.3, -- Apple saturates the blur a little so colours glow through
 			vibrancy_darkness = 0.0,
-			brightness = 0.4, -- Keeps light blue highlights clean
-			contrast = 2, -- Prevents harsh, clipped contrast
-			noise = 0.03, -- Micro-grain to prevent color banding on dark gradients
+			brightness = 0.8, -- dark material, but the backdrop still shows
+			contrast = 1.0, -- neutral; the bar/menu tint in eww does the darkening
+			noise = 0.02, -- Micro-grain to prevent color banding on dark gradients
 
 			-- UI & Depth enhancements
 			popups = true, -- Blurs context menus and tooltips
