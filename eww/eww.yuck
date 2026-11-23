@@ -40,7 +40,14 @@
       (button :class "item logo icon" :timeout "2s"
               :onclick "${EWW_CMD} open --toggle power --arg monitor=${monitor}"
         "")
-      (label :class "app" :text {hypr.app}))
+      (label :class "app" :text {hypr.app})
+      ;; The Go menu has to open under this button, which moves with the app name.
+      ;; Both fonts are monospace, so x = everything to the left of the button:
+      ;; bar padding 10 + logo 37 + app margin 6 + 8px per letter + go margin 6,
+      ;; minus 2 to line up like the power menu. Tweak 57/8 if it sits off.
+      (button :class "item go-button" :timeout "2s"
+              :onclick "${EWW_CMD} open --toggle go --arg monitor=${monitor} --arg x=${57 + 8 * strlength(hypr.app)}"
+        "Go"))
     (box)
     (box :halign "end" :space-evenly false
       (systray :class "tray" :icon-size 16 :spacing 8)
@@ -88,18 +95,32 @@
   :unfocus-close true
   :namespace "eww-power"
   (box :class "menu" :orientation "v" :space-evenly false
-    (menu-item :name "Sleep" :run "systemctl suspend")
+    (menu-item :menu "power" :name "Sleep" :run "systemctl suspend")
     (box :class "separator")
-    (menu-item :name "Restart" :run "systemctl reboot")
-    (menu-item :name "Shut Down" :run "systemctl poweroff")
+    (menu-item :menu "power" :name "Restart" :run "systemctl reboot")
+    (menu-item :menu "power" :name "Shut Down" :run "systemctl poweroff")
     (box :class "separator")
-    (menu-item :name "Log Out"
+    (menu-item :menu "power" :name "Log Out"
                :run "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")))
 
-;; Closes the menu first, then runs the action in the background.
-(defwidget menu-item [name run]
+;; ---------------- go menu ----------------
+;; Folders opened in yazi, like Finder's Go menu. x comes from the bar's Go button.
+(defwindow go [monitor x]
+  :monitor monitor
+  :geometry (geometry :x "${x}px" :y "6px" :width "200px" :anchor "top left")
+  :stacking "overlay"
+  :focusable "ondemand"
+  :unfocus-close true
+  :namespace "eww-go"
+  (box :class "menu" :orientation "v" :space-evenly false
+    (menu-item :menu "go" :name "Projects" :run "ghostty -e yazi ~/Projects")
+    (menu-item :menu "go" :name "Downloads" :run "ghostty -e yazi ~/Downloads")
+    (menu-item :menu "go" :name "Documents" :run "ghostty -e yazi ~/Documents")))
+
+;; Closes its menu window first, then runs the action in the background.
+(defwidget menu-item [menu name run]
   (button :class "menu-item" :timeout "2s"
-          :onclick "${EWW_CMD} close power; (${run}) &"
+          :onclick "${EWW_CMD} close ${menu}; (${run}) &"
     (label :halign "start" :text name)))
 
 ;; ---------------- control center ----------------

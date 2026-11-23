@@ -30,7 +30,7 @@ hl.window_rule({
 })
 
 -- Frosted glass behind the eww windows (eww/eww.yuck sets the eww-bar, eww-dock,
--- eww-cc and eww-power namespaces). ignore_alpha skips the fully transparent
+-- eww-cc, eww-power and eww-go namespaces). ignore_alpha skips the fully transparent
 -- margins and shadows around the dock pill and the popups.
 hl.layer_rule({
 	name = "eww-blur",

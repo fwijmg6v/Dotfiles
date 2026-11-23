@@ -23,7 +23,7 @@ window, decoration {
   outline: none;
 }
 
-.bar, .cc, .dock, .power {
+.bar, .cc, .dock, .power, .go {
   font-family: "JetBrainsMono Nerd Font Mono";
   font-size: 13px;
   color: $fg;
@@ -49,6 +49,7 @@ window.bar { background-color: $bar; }
 
 .logo { padding: 0 12px; margin: 2px 0; } // a 22px glyph is ~29px tall: keep it inside the 36px bar
 .app { font-weight: bold; margin-left: 6px; }
+.go-button { margin-left: 6px; } // the Go menu x in eww.yuck counts on this 6px
 .clock { padding: 0 10px 0 6px; }
 
 .menubar image { color: $fg; } // symbolic theme icons take the text colour
@@ -78,8 +79,8 @@ window.dock { background-color: transparent; }
   &.active { min-width: 24px; background-color: $accent; }
 }
 
-// ---------------- power menu ----------------
-window.power { background-color: transparent; }
+// ---------------- power + go menus ----------------
+window.power, window.go { background-color: transparent; }
 
 .menu {
   margin: 4px;
