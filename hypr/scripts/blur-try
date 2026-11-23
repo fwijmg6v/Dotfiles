@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Try Hyprland's blur variants live (0.57+). Nothing is saved: `hyprctl reload`
+# goes back to the variant set in modules/look.lua.
+#   blur-try          next variant (wraps around)
+#   blur-try prev     previous variant
+#   blur-try NAME     that variant, e.g. blur-try drops
+# Each variant's own options (decoration.blur.<name>) keep their defaults unless
+# look.lua sets them; see https://wiki.hypr.land/configuring/core/config-options/
+set -u
+variants=(kawase acrylic aurora drops fluid_jar frost haze heat_shimmer prism ripple water)
+n=${#variants[@]}
+state="${XDG_RUNTIME_DIR:-/tmp}/blur-try"
+cur=$(cat "$state" 2>/dev/null || echo -1)
+
+case "${1:-next}" in
+  next) i=$(( (cur + 1) % n )) ;;
+  prev) i=$(( (cur - 1 + n) % n )) ;;
+  *)
+    i=-1
+    for k in "${!variants[@]}"; do [ "${variants[k]}" = "$1" ] && i=$k; done
+    if [ "$i" -lt 0 ]; then
+      echo "unknown variant '$1', pick one of: ${variants[*]}" >&2
+      exit 2
+    fi ;;
+esac
+
+v=${variants[i]}
+out=$(hyprctl eval "hl.config({ decoration = { blur = { variant = \"$v\" } } })")
+if [ "$out" != "ok" ]; then
+  echo "hyprctl: $out" >&2
+  exit 1
+fi
+echo "$i" > "$state"
+hyprctl notify -1 2500 "rgb(BCE3FF)" "blur: $v ($((i + 1))/$n)" > /dev/null
+echo "$v ($((i + 1))/$n)"
