@@ -10,6 +10,15 @@ if status is-interactive
     # Set default editor
     set -gx EDITOR nvim
     set -gx VISUAL nvim
+
+    # Vi mode; the Graphite remaps live in functions/fish_user_key_bindings.fish
+    set -g fish_key_bindings fish_vi_key_bindings
+    # Cursor shows the mode: block = normal/visual, bar = insert
+    set -g fish_cursor_default block
+    set -g fish_cursor_visual block
+    set -g fish_cursor_insert line
+    set -g fish_cursor_replace_one underscore
+    set -g fish_cursor_replace underscore
 end
 
 
