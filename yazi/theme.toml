@@ -1,0 +1,117 @@
+# ~/.config/yazi/theme.toml
+# Ice palette from ghostty/config.ghostty (also eww, fuzzel). Keys follow the yazi
+# v26.9.1 preset; anything not set here keeps the stock dark theme.
+#   ink #090A0F   surface #161B22   raised #212830   line #2A313B
+#   fg  #E6F0FA   dim #8DA0B0       slate #7D8B99    accent #BCE3FF
+#   red #FF6B7E   green #98C379     yellow #E5C07B   magenta #C678DD
+
+[mgr]
+cwd = { fg = "#BCE3FF", bold = true }
+
+find_keyword  = { fg = "#E5C07B", bold = true, underline = true }
+find_position = { fg = "#C678DD", bg = "reset", bold = true }
+
+symlink_target = { fg = "#7D8B99", italic = true }
+
+marker_copied   = { fg = "#98C379", bg = "#98C379" }
+marker_cut      = { fg = "#FF6B7E", bg = "#FF6B7E" }
+marker_marked   = { fg = "#BCE3FF", bg = "#BCE3FF" }
+marker_selected = { fg = "#E5C07B", bg = "#E5C07B" }
+
+count_copied   = { fg = "#090A0F", bg = "#98C379" }
+count_cut      = { fg = "#090A0F", bg = "#FF6B7E" }
+count_selected = { fg = "#090A0F", bg = "#E5C07B" }
+
+border_symbol = "│"
+border_style  = { fg = "#2A313B" }
+
+[tabs]
+active   = { fg = "#090A0F", bg = "#BCE3FF", bold = true }
+inactive = { fg = "#8DA0B0", bg = "#161B22" }
+
+[mode]
+normal_main = { fg = "#090A0F", bg = "#BCE3FF", bold = true }
+normal_alt  = { fg = "#BCE3FF", bg = "#161B22" }
+select_main = { fg = "#090A0F", bg = "#E5C07B", bold = true }
+select_alt  = { fg = "#E5C07B", bg = "#161B22" }
+unset_main  = { fg = "#090A0F", bg = "#FF6B7E", bold = true }
+unset_alt   = { fg = "#FF6B7E", bg = "#161B22" }
+
+# Hovered row: same raised surface as the old fuzzel selection, not a reversed block
+[indicator]
+parent  = { fg = "#BCE3FF", bg = "#161B22" }
+current = { fg = "#BCE3FF", bg = "#212830", bold = true }
+preview = { underline = true }
+
+[status]
+perm_sep   = { fg = "#2A313B" }
+perm_type  = { fg = "#BCE3FF" }
+perm_read  = { fg = "#E5C07B" }
+perm_write = { fg = "#FF6B7E" }
+perm_exec  = { fg = "#98C379" }
+
+progress_label  = { fg = "#E6F0FA", bold = true }
+progress_normal = { fg = "#BCE3FF", bg = "#161B22" }
+progress_error  = { fg = "#FF6B7E", bg = "#161B22" }
+
+[which]
+border          = { fg = "#BCE3FF" }
+cand            = { fg = "#BCE3FF" }
+rest            = { fg = "#7D8B99" }
+desc            = { fg = "#8DA0B0" }
+separator_style = { fg = "#2A313B" }
+
+[confirm]
+border  = { fg = "#BCE3FF" }
+title   = { fg = "#BCE3FF", bold = true }
+btn_yes = { fg = "#090A0F", bg = "#BCE3FF", bold = true }
+
+[spot]
+border   = { fg = "#BCE3FF" }
+title    = { fg = "#BCE3FF", bold = true }
+tbl_col  = { fg = "#BCE3FF" }
+tbl_cell = { fg = "#BCE3FF", bg = "#212830" }
+
+[notify]
+title_info  = { fg = "#98C379" }
+title_warn  = { fg = "#E5C07B" }
+title_error = { fg = "#FF6B7E" }
+
+[pick]
+border = { fg = "#BCE3FF" }
+active = { fg = "#BCE3FF", bg = "#212830", bold = true }
+
+[input]
+border   = { fg = "#BCE3FF" }
+title    = { fg = "#BCE3FF" }
+selected = { fg = "#090A0F", bg = "#BCE3FF" }
+
+[cmp]
+border = { fg = "#BCE3FF" }
+active = { fg = "#BCE3FF", bg = "#212830", bold = true }
+
+[tasks]
+border  = { fg = "#BCE3FF" }
+title   = { fg = "#BCE3FF" }
+hovered = { fg = "#BCE3FF", bg = "#212830", bold = true }
+
+[help]
+border  = { fg = "#BCE3FF" }
+chord   = { fg = "#BCE3FF" }
+hovered = { fg = "#BCE3FF", bg = "#212830", bold = true }
+
+# Replaces the whole stock list, so every rule is restated (first match wins).
+[filetype]
+rules = [
+	{ mime = "**/image/*", fg = "#E5C07B" },
+	{ mime = "**/{audio,video}/*", fg = "#C678DD" },
+	{ mime = "**/application/{zip,rar,7z*,tar,gzip,xz,zstd,bzip*,lzma,compress,archive,cpio,arj,xar,ms-cab*}", fg = "#FF6B7E" },
+	{ mime = "**/application/{pdf,doc,rtf}", fg = "#D0ECFF" },
+	{ mime = "vfs/{absent,stale}", fg = "#7D8B99" },
+	{ url = "*", is = "orphan", fg = "#FF6B7E", italic = true },
+	{ url = "*", is = "exec", fg = "#98C379" },
+	{ url = "*", is = "dummy", fg = "#FF6B7E", italic = true },
+	{ url = "*/", is = "dummy", fg = "#FF6B7E", italic = true },
+	{ url = "*/", fg = "#BCE3FF", bold = true },
+	{ url = "*", fg = "#E6F0FA" },
+]
