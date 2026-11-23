@@ -14,8 +14,12 @@
 (defpoll eth :interval "5s" :initial '{"dev":"","on":false,"conn":""}' "scripts/ethernet")
 (defpoll vpn :interval "3s" :initial "disconnected" "mullvad status --json | jq -r .state")
 (defpoll ts :interval "5s" :initial "Stopped" "scripts/tailscale")
-;; DDC/CI backlight per monitor; slow to query, so only every minute
-(defpoll displays :interval "60s" :initial "[]" "scripts/brightness get")
+;; DDC/CI backlight per monitor; slow to query, so only every minute.
+;; Monitors are hardcoded here and in scripts/brightness so the control center
+;; opens at full size (the real values replace these 50s a moment later).
+(defpoll displays :interval "60s"
+  :initial '[{"name":"HDMI-A-1","model":"MB16QHG","bus":5,"value":50,"max":100},{"name":"DP-1","model":"PG27QRT1B","bus":6,"value":50,"max":100},{"name":"DP-2","model":"PA278CV","bus":8,"value":50,"max":100}]'
+  "scripts/brightness get")
 (deflisten song :initial ""
   "playerctl --follow metadata --format '{{ artist }} - {{ title }}' 2>/dev/null")
 (deflisten playing :initial "Stopped" "playerctl --follow status 2>/dev/null")

@@ -7,19 +7,16 @@ set -u
 dir="${XDG_RUNTIME_DIR:-/tmp}/eww-ddc"
 mkdir -p "$dir"
 
-# "connector bus model" per DDC-capable monitor. Cached: detect takes seconds.
+# "connector bus model" per DDC-capable monitor. Hardcoded, since `ddcutil detect`
+# takes seconds; keep in sync with the :initial of `displays` in eww.yuck.
+# If a slider stops working (new GPU, kernel driver order), recheck the buses
+# with `ddcutil detect --brief`.
 displays() {
-  [ -s "$dir/map" ] || ddcutil detect --brief 2>/dev/null | awk '
-    function flush() { if (ok && bus != "" && con != "") print con, bus, model }
-    /^(Display [0-9]+|Invalid display)/ { flush(); ok = ($1 == "Display"); bus = con = model = "" }
-    /I2C bus:/       { bus = $NF; sub(/.*i2c-/, "", bus) }
-    # "DRM connector:" or "DRM_connector:" depending on the ddcutil version
-    /DRM[ _]connector:/ { con = $NF; sub(/^card[0-9]+-/, "", con) }
-    # model: "Monitor: MFG:MODEL:SERIAL" (brief) or its own "Model:" line
-    /Monitor:/          { split($0, f, ":"); model = f[3] }
-    /^ *Model:/         { model = $0; sub(/^ *Model: */, "", model) }
-    END              { flush() }' > "$dir/map"
-  cat "$dir/map"
+  cat <<'EOF'
+HDMI-A-1 5 MB16QHG
+DP-1 6 PG27QRT1B
+DP-2 8 PA278CV
+EOF
 }
 
 get() {
