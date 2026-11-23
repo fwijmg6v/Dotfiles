@@ -1,0 +1,170 @@
+// macOS-style menu bar + control center, ice palette (ghostty/fish/alacritty)
+$fg: #E6F0FA;
+$dim: #8DA0B0;
+$accent: #BCE3FF;
+$ink: #090A0F;
+$bar: rgba(9, 10, 15, 0.45); // frosted by the Hyprland blur layer rule
+$panel: rgba(14, 17, 24, 0.72);
+$hover: rgba(230, 240, 250, 0.12);
+$card: rgba(230, 240, 250, 0.07);
+$line: rgba(230, 240, 250, 0.10);
+// from Hyprland's inactive_border (hypr/modules/look.lua)
+$inactive-border: #161B22;
+
+// Drop the GTK theme's button look; low specificity so the classes below win.
+button { all: unset; }
+
+// The GTK theme frames windows (border, border-image, CSD decoration node);
+// none of that belongs on bars and popups.
+window, decoration {
+  border: none;
+  border-image: none;
+  box-shadow: none;
+  outline: none;
+}
+
+.bar, .cc, .dock, .power {
+  font-family: "JetBrainsMono Nerd Font Mono";
+  font-size: 13px;
+  color: $fg;
+}
+
+// Nerd Font icons in Mono: every glyph gets the same one-cell width, so a
+// changing icon (volume levels) never shifts its neighbours. Mono draws icons
+// small, hence the bigger size.
+.icon { font-size: 22px; }
+
+// ---------------- bar ----------------
+window.bar { background-color: $bar; }
+
+.menubar { padding: 0 10px; }
+
+.item {
+  padding: 4px 10px;
+  margin: 4px 0;
+  border-radius: 6px;
+  transition: background-color 120ms;
+  &:hover { background-color: $hover; }
+}
+
+.logo { padding: 0 12px; margin: 2px 0; } // a 22px glyph is ~29px tall: keep it inside the 36px bar
+.app { font-weight: bold; margin-left: 6px; }
+.clock { padding: 0 10px 0 6px; }
+
+.menubar image { color: $fg; } // symbolic theme icons take the text colour
+.off { opacity: 0.35; } // disconnected ethernet icon
+
+.tray { margin: 0 8px; }
+.status { margin: 0 6px; }
+
+// ---------------- dock ----------------
+window.dock { background-color: transparent; }
+
+.dock-pill {
+  padding: 9px 14px;
+  border-radius: 14px;
+  background-color: $bar;
+  border: 2px solid $inactive-border; // like Hyprland's border_size = 2
+}
+
+// workspaces as page dots, the active one stretches into a pill
+.ws {
+  min-width: 8px;
+  min-height: 8px;
+  border-radius: 4px;
+  background-color: rgba(230, 240, 250, 0.35);
+  transition: all 150ms;
+  &:hover { background-color: rgba(230, 240, 250, 0.6); }
+  &.active { min-width: 24px; background-color: $accent; }
+}
+
+// ---------------- power menu ----------------
+window.power { background-color: transparent; }
+
+.menu {
+  margin: 4px;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: $panel;
+  border: 1px solid $line;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.menu-item {
+  padding: 4px 10px;
+  border-radius: 5px;
+  &:hover { background-color: $accent; color: $ink; }
+}
+
+.separator {
+  min-height: 1px;
+  margin: 5px 10px;
+  background-color: $line;
+}
+
+// ---------------- control center ----------------
+window.cc { background-color: transparent; }
+
+.panel {
+  margin: 4px;
+  padding: 12px;
+  border-radius: 16px;
+  background-color: $panel;
+  border: 1px solid $line;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.card {
+  padding: 10px;
+  border-radius: 12px;
+  background-color: $card;
+}
+
+// connection rows inside the one connectivity card
+.row {
+  padding: 4px 6px;
+  border-radius: 10px;
+  transition: background-color 120ms;
+  &:hover { background-color: $hover; }
+
+  .bubble {
+    min-width: 30px;
+    min-height: 30px;
+    border-radius: 15px;
+    background-color: rgba(230, 240, 250, 0.14);
+  }
+  .bubble image { color: $fg; }
+  &.on .bubble { background-color: $accent; }
+  &.on .bubble image { color: $ink; }
+}
+
+.row-title { font-weight: bold; }
+.row-sub, .song { color: $dim; font-size: 12px; }
+.card-title { font-weight: bold; }
+
+.media {
+  padding: 4px 8px;
+  border-radius: 8px;
+  &:hover { background-color: $hover; }
+}
+
+// sliders (volume, brightness): thick rounded track, white fill, no knob (drag the fill)
+.level {
+  trough {
+    min-height: 10px;
+    border-radius: 5px;
+    background-color: rgba(230, 240, 250, 0.15);
+  }
+  highlight {
+    border-radius: 5px;
+    background-color: $fg;
+  }
+  slider {
+    min-width: 0;
+    min-height: 0;
+    margin: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+  }
+}

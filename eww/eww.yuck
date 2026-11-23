@@ -1,0 +1,168 @@
+;; macOS-style menu bar for Hyprland, ice palette (matches ghostty/fish).
+;; Start with scripts/launch: a bar (top) and a workspace dock (bottom) per monitor.
+;; Logo = power menu, toggles icon (icons/eww-control-symbolic.svg) = control center.
+;; Needs: socat, jq, wpctl, nmcli, mullvad, tailscale, playerctl, ddcutil
+;; Icons are GTK theme icons, link them once (then restart eww):
+;;   mkdir -p ~/.local/share/icons/hicolor/scalable/apps
+;;   ln -sf ~/.config/eww/icons/*.svg ~/.local/share/icons/hicolor/scalable/apps/
+
+;; ---------------- state ----------------
+(deflisten hypr :initial '{"bymon":{},"active":{},"app":"Desktop"}'
+  "scripts/hypr-state")
+(defpoll clock :interval "5s" "date '+%a %-d %b  %H:%M'")
+(defpoll volume :interval "1s" :initial '{"vol":0,"muted":false}' "scripts/volume")
+(defpoll eth :interval "5s" :initial '{"dev":"","on":false,"conn":""}' "scripts/ethernet")
+(defpoll vpn :interval "3s" :initial "disconnected" "mullvad status --json | jq -r .state")
+(defpoll ts :interval "5s" :initial "Stopped" "scripts/tailscale")
+;; DDC/CI backlight per monitor; slow to query, so only every minute
+(defpoll displays :interval "60s" :initial "[]" "scripts/brightness get")
+(deflisten song :initial ""
+  "playerctl --follow metadata --format '{{ artist }} - {{ title }}' 2>/dev/null")
+(deflisten playing :initial "Stopped" "playerctl --follow status 2>/dev/null")
+
+;; ---------------- bar ----------------
+(defwindow bar [monitor]
+  :monitor monitor
+  :geometry (geometry :width "100%" :height "36px" :anchor "top center")
+  :exclusive true
+  :stacking "fg"
+  :focusable "none"
+  :namespace "eww-bar"
+  (bar :monitor monitor))
+
+(defwidget bar [monitor]
+  (centerbox :class "menubar"
+    (box :halign "start" :space-evenly false
+      (button :class "item logo icon" :timeout "2s"
+              :onclick "${EWW_CMD} open --toggle power --arg monitor=${monitor}"
+        "")
+      (label :class "app" :text {hypr.app}))
+    (box)
+    (box :halign "end" :space-evenly false
+      (systray :class "tray" :icon-size 16 :spacing 8)
+      ;; status indicators (not clickable). Theme icons (icons/ linked into
+      ;; ~/.local/share/icons) stay sharp at any monitor scale and take their
+      ;; colour from CSS; VPNs only show while connected.
+      (box :class "status" :space-evenly false :spacing 14 :valign "center"
+        (image :visible {vpn == "connected"} :icon "eww-mullvad-symbolic" :icon-size "menu")
+        (image :visible {ts == "Running"} :icon "eww-tailscale-symbolic" :icon-size "menu")
+        (image :class {eth.on ? "" : "off"} :icon "eww-ethernet-symbolic" :icon-size "menu")
+        (label :class "icon"
+               :text {volume.muted || volume.vol == 0 ? "" : volume.vol < 50 ? "" : ""}))
+      (button :class "item" :timeout "2s"
+              :onclick "${EWW_CMD} open --toggle cc --arg monitor=${monitor}"
+        (image :icon "eww-control-symbolic" :icon-size "menu"))
+      (label :class "clock" :text clock))))
+
+(defwidget workspaces [monitor]
+  (box :class "workspaces" :space-evenly false :spacing 6 :valign "center"
+    (for id in {hypr.bymon?.[monitor] ?: "[]"}
+      (button :class "ws ${hypr.active?.[monitor] == id ? 'active' : ''}" :valign "center"
+              :tooltip "Workspace ${id}"
+              :onclick "hyprctl dispatch 'hl.dsp.focus({ workspace = ${id} })'"
+        (box)))))
+
+;; ---------------- dock ----------------
+;; Workspaces of this monitor as a floating pill at the bottom.
+(defwindow dock [monitor]
+  :monitor monitor
+  :geometry (geometry :y "8px" :anchor "bottom center")
+  :exclusive true
+  :stacking "fg"
+  :focusable "none"
+  :namespace "eww-dock"
+  (box :class "dock-pill"
+    (workspaces :monitor monitor)))
+
+;; ---------------- power menu ----------------
+;; Dropdown under the logo, like the Apple menu.
+(defwindow power [monitor]
+  :monitor monitor
+  :geometry (geometry :x "8px" :y "6px" :width "200px" :anchor "top left")
+  :stacking "overlay"
+  :focusable "ondemand"
+  :unfocus-close true
+  :namespace "eww-power"
+  (box :class "menu" :orientation "v" :space-evenly false
+    (menu-item :name "Sleep" :run "systemctl suspend")
+    (box :class "separator")
+    (menu-item :name "Restart" :run "systemctl reboot")
+    (menu-item :name "Shut Down" :run "systemctl poweroff")
+    (box :class "separator")
+    (menu-item :name "Log Out"
+               :run "command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'")))
+
+;; Closes the menu first, then runs the action in the background.
+(defwidget menu-item [name run]
+  (button :class "menu-item" :timeout "2s"
+          :onclick "${EWW_CMD} close power; (${run}) &"
+    (label :halign "start" :text name)))
+
+;; ---------------- control center ----------------
+;; Closes when it loses focus (after you've clicked into it) or via the bar again.
+(defwindow cc [monitor]
+  :monitor monitor
+  :geometry (geometry :x "8px" :y "6px" :width "320px" :anchor "top right")
+  :stacking "overlay"
+  :focusable "ondemand"
+  :unfocus-close true
+  :namespace "eww-cc"
+  (control-center))
+
+;; One connection row: round icon (dark on accent when on), name, status. Click toggles.
+(defwidget conn-row [icon title subtitle on onclick]
+  (button :class "row ${on ? 'on' : ''}" :timeout "2s" :onclick onclick
+    (box :space-evenly false :spacing 10
+      (box :class "bubble" :valign "center"
+        (image :icon "eww-${icon}-symbolic" :icon-size "menu"))
+      (box :orientation "v" :space-evenly false :valign "center"
+        (label :class "row-title" :halign "start" :text title)
+        (label :class "row-sub" :halign "start" :text subtitle)))))
+
+(defwidget control-center []
+  (box :class "panel" :orientation "v" :space-evenly false :spacing 10
+    (box :class "card" :orientation "v" :space-evenly false :spacing 4
+      (conn-row :icon "ethernet" :title "Ethernet"
+                :subtitle {eth.on ? eth.conn : eth.dev == "" ? "No adapter" : "Not connected"}
+                :on {eth.on}
+                :onclick "nmcli device ${eth.on ? 'disconnect' : 'connect'} ${eth.dev} &")
+      (conn-row :icon "mullvad" :title "Mullvad"
+                :subtitle {vpn == "connected" ? "Connected" : vpn == "connecting" ? "Connecting…" : "Off"}
+                :on {vpn == "connected"}
+                :onclick "mullvad ${vpn == 'connected' ? 'disconnect' : 'connect'} &")
+      (conn-row :icon "tailscale" :title "Tailscale"
+                :subtitle {ts == "Running" ? "Connected" : ts == "NeedsLogin" ? "Needs login" : "Off"}
+                :on {ts == "Running"}
+                :onclick "tailscale ${ts == 'Running' ? 'down' : 'up'} &"))
+    ;; one backlight slider per monitor that speaks DDC/CI (hidden if none do)
+    (box :class "card" :orientation "v" :space-evenly false :spacing 6
+         :visible {arraylength(displays) > 0}
+      (label :class "card-title" :halign "start" :text "Display")
+      (for d in displays
+        (box :orientation "v" :space-evenly false :spacing 2
+          (label :class "row-sub" :halign "start" :text {d.model != "" ? "${d.model} (${d.name})" : d.name})
+          (box :space-evenly false :spacing 10
+            (label :class "icon" :text "")
+            ;; 0-98 slider scale, see the note on the sound slider
+            (scale :class "level" :hexpand true :min 0 :max 99 :round-digits 0
+                   :value {round(d.value * 98 / d.max, 0)}
+                   :onchange "scripts/brightness set ${d.bus} $(( ({} * ${d.max} + 49) / 98 )) &")))))
+    (box :class "card" :orientation "v" :space-evenly false :spacing 8
+      (label :class "card-title" :halign "start" :text "Sound")
+      (box :space-evenly false :spacing 10
+        (button :class "icon mute" :onclick "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+          {volume.muted || volume.vol == 0 ? "" : volume.vol < 50 ? "" : ""})
+        ;; Sliders run 0-98, not 0-100: eww applies :value before :max, while the
+        ;; GTK default range still stops at 99, so a full slider would open at 99%.
+        ;; Values <= 98 never hit that clamp; onchange maps back to 0-100 (rounded).
+        (scale :class "level" :hexpand true :min 0 :max 99 :round-digits 0
+               :value {round(volume.vol * 0.98, 0)}
+               :onchange "wpctl set-volume @DEFAULT_AUDIO_SINK@ $(( ({} * 100 + 49) / 98 ))%")))
+    (box :class "card" :orientation "v" :space-evenly false :spacing 8 :visible {song != ""}
+      (label :class "card-title" :halign "start" :text "Now Playing")
+      (label :class "song" :halign "start" :limit-width 40 :text song)
+      (box :halign "center" :space-evenly false :spacing 28
+        (button :class "icon media" :onclick "playerctl previous" "")
+        (button :class "icon media" :onclick "playerctl play-pause"
+          {playing == "Playing" ? "" : ""})
+        (button :class "icon media" :onclick "playerctl next" "")))))

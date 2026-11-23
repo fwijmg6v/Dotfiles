@@ -1,0 +1,75 @@
+# ==========================================
+# 1. COLOR PALETTE (Light Blue & Saturated Black)
+# ==========================================
+
+# Saturated Ink Black background & Soft Sky Blue foreground
+background = #090A0F
+foreground = #E6F0FA
+cursor-color = #BCE3FF
+cursor-text  = #090A0F
+selection-background = #161B22
+selection-foreground = #BCE3FF
+
+# Normal Colors
+palette = 0=#090A0F
+palette = 1=#FF6B7E
+palette = 2=#98C379
+palette = 3=#E5C07B
+palette = 4=#7D8B99
+palette = 5=#C678DD
+palette = 6=#BCE3FF
+palette = 7=#E6F0FA
+
+# Bright Colors
+palette = 8=#161B22
+palette = 9=#FF7B8E
+palette = 10=#A8D389
+palette = 11=#F5D08B
+palette = 12=#8DA0B0
+palette = 13=#D688ED
+palette = 14=#D0ECFF
+palette = 15=#F4F8FB
+
+
+# ==========================================
+# 2. TRANSPARENCY & FROSTED BLUR
+# ==========================================
+
+# Opacity aligned with Hyprland active_opacity (0.92)
+background-opacity = 0.92
+# Enables compositor background blur pass
+background-blur = true
+
+
+# ==========================================
+# 3. TYPOGRAPHY & WINDOW DECORATIONS
+# ==========================================
+
+font-family = "JetBrainsMono Nerd Font"
+font-size = 11.5
+font-style = SemiBold
+font-style-bold = Bold
+font-family = "Apple Color Emoji"
+# Minimal borderless window matching your Hyprland gaps
+window-padding-x = 14
+window-padding-y = 12
+window-decoration = false
+
+
+# ==========================================
+# 4. CURSOR & CLOUDY ANIMATIONS
+# ==========================================
+
+cursor-style = block
+cursor-style-blink = true
+# Smooth cursor movement physics matching your cloud spring feel
+cursor-click-to-move = true
+
+
+# ==========================================
+# 5. INTEGRATION & PERFORMANCE
+# ==========================================
+
+mouse-hide-while-typing = true
+confirm-close-surface = false
+shell-integration = fish

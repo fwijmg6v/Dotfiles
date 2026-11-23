@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Per-monitor backlight over DDC/CI (ddcutil), for the control center.
+#   brightness get          -> [{"name":"DP-1","model":"...","bus":5,"value":50,"max":100}, ...]
+#   brightness set BUS VAL  -> set VCP 10 (brightness); a fast slider drag only
+#                              ever runs one ddcutil per monitor, with the latest value
+set -u
+dir="${XDG_RUNTIME_DIR:-/tmp}/eww-ddc"
+mkdir -p "$dir"
+
+# "connector bus model" per DDC-capable monitor. Cached: detect takes seconds.
+displays() {
+  [ -s "$dir/map" ] || ddcutil detect --brief 2>/dev/null | awk '
+    function flush() { if (ok && bus != "" && con != "") print con, bus, model }
+    /^(Display [0-9]+|Invalid display)/ { flush(); ok = ($1 == "Display"); bus = con = model = "" }
+    /I2C bus:/       { bus = $NF; sub(/.*i2c-/, "", bus) }
+    # "DRM connector:" or "DRM_connector:" depending on the ddcutil version
+    /DRM[ _]connector:/ { con = $NF; sub(/^card[0-9]+-/, "", con) }
+    # model: "Monitor: MFG:MODEL:SERIAL" (brief) or its own "Model:" line
+    /Monitor:/          { split($0, f, ":"); model = f[3] }
+    /^ *Model:/         { model = $0; sub(/^ *Model: */, "", model) }
+    END              { flush() }' > "$dir/map"
+  cat "$dir/map"
+}
+
+get() {
+  local out=() con bus model cur max
+  while read -r con bus model; do
+    cur="" max=""
+    read -r cur max < <(ddcutil --bus "$bus" getvcp 10 --brief 2>/dev/null | awk '/^VCP / { print $4, $5 }')
+    [ -n "$cur" ] || continue
+    model=${model//\"/}
+    out+=("{\"name\":\"$con\",\"model\":\"$model\",\"bus\":$bus,\"value\":$cur,\"max\":$max}")
+  done < <(displays)
+  local IFS=,
+  echo "[${out[*]}]"
+}
+
+set_() {
+  local bus=$1 want="$dir/want-$1" v
+  echo "${2%.*}" > "$want"
+  exec 9> "$dir/lock-$bus"
+  # Whoever holds the lock applies the newest value; others just leave theirs in $want.
+  while flock -n 9; do
+    v=$(< "$want")
+    ddcutil --bus "$bus" --noverify setvcp 10 "$v" > /dev/null 2>&1
+    flock -u 9
+    [ "$(< "$want")" = "$v" ] && break
+  done
+}
+
+case "${1:-}" in
+  get) get ;;
+  set) set_ "$2" "$3" ;;
+  *) echo "usage: brightness get | set BUS VALUE" >&2; exit 2 ;;
+esac

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+<!-- Tailscale: solid "T" dots, faded background dots (fill-opacity survives GTK recolouring) -->
+<path d="M0 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0zM9 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0zM18 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0zM9 21a3 3 0 1 0 6 0a3 3 0 1 0-6 0z"/>
+<path fill-opacity=".4" d="M0 3a3 3 0 1 0 6 0a3 3 0 1 0-6 0zM9 3a3 3 0 1 0 6 0a3 3 0 1 0-6 0zM18 3a3 3 0 1 0 6 0a3 3 0 1 0-6 0zM0 21a3 3 0 1 0 6 0a3 3 0 1 0-6 0zM18 21a3 3 0 1 0 6 0a3 3 0 1 0-6 0z"/>
+</svg>

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# {"vol":45,"muted":false} for the default output
+wpctl get-volume @DEFAULT_AUDIO_SINK@ |
+  awk '{ printf "{\"vol\":%d,\"muted\":%s}\n", $2 * 100 + 0.5, ($3 == "[MUTED]") ? "true" : "false" }'

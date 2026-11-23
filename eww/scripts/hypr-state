@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# One JSON line per change: workspaces per monitor, each monitor's active
+# workspace, and the focused app. Re-emitted on Hyprland events.
+emit() {
+  local win
+  win=$(hyprctl -j activewindow)
+  [ -n "$win" ] || win='{}'
+  jq -nc \
+    --argjson ws "$(hyprctl -j workspaces)" \
+    --argjson mons "$(hyprctl -j monitors)" \
+    --argjson win "$win" '
+    {
+      bymon: (reduce ($ws[] | select(.id > 0)) as $w
+               (reduce $mons[] as $m ({}; .[$m.name] = []); .[$w.monitor] += [$w.id])
+             | map_values(sort)),
+      active: (reduce $mons[] as $m ({}; .[$m.name] = $m.activeWorkspace.id)),
+      app: (($win.class // "") | split(".") | (last // "")
+            | if . == "" then "Desktop" else (.[:1] | ascii_upcase) + .[1:] end)
+    }'
+}
+
+emit
+sock="$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket2.sock"
+# Events arrive in bursts: drain the burst, then emit once.
+socat -u "UNIX-CONNECT:$sock" - | while read -r _; do
+  while read -r -t 0.05 _; do :; done
+  emit
+done

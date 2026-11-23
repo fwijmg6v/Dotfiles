@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Running, Stopped, NeedsLogin, ... (Stopped if tailscale isn't available)
+tailscale status --json 2>/dev/null | jq -r '.BackendState // "Stopped"' 2>/dev/null || echo Stopped

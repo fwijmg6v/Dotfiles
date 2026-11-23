@@ -1,0 +1,71 @@
+# ~/.config/yazi/keymap.toml
+# Graphite layout, same scheme as nvim: movement on y h a e (QWERTY hjkl spot),
+# shifted movement keys do what shifted hjkl did, displaced commands go to
+# j (yank), n (create, mirrors nvim append) and k (next found).
+# prepend_keymap overrides the defaults; everything else stays stock.
+
+[mgr]
+prepend_keymap = [
+	# movement
+	{ on = "y", run = "leave",      desc = "Back to the parent directory" },
+	{ on = "h", run = "arrow next", desc = "Next file" },
+	{ on = "a", run = "arrow prev", desc = "Previous file" },
+	{ on = "e", run = "enter",      desc = "Enter the child directory" },
+	{ on = "Y", run = "back",       desc = "Back to previous directory" },
+	{ on = "E", run = "forward",    desc = "Forward to next directory" },
+	{ on = "H", run = "seek 5",     desc = "Seek down 5 units in the preview" },
+	{ on = "A", run = "seek -5",    desc = "Seek up 5 units in the preview" },
+	# displaced
+	{ on = "j", run = "yank",                  desc = "Yank selected files (copy)" },
+	{ on = "J", run = "unyank",                desc = "Cancel the yank status" },
+	{ on = "n", run = "create",                desc = "Create a file (ends with / for directories)" },
+	{ on = "N", run = "bulk_create",           desc = "Bulk create files" },
+	{ on = "k", run = "find_arrow",            desc = "Next found" },
+	{ on = "K", run = "find_arrow --previous", desc = "Previous found" },
+]
+
+[tasks]
+prepend_keymap = [
+	{ on = "h", run = "arrow next", desc = "Next task" },
+	{ on = "a", run = "arrow prev", desc = "Previous task" },
+]
+
+[spot]
+prepend_keymap = [
+	{ on = "h", run = "arrow next", desc = "Next line" },
+	{ on = "a", run = "arrow prev", desc = "Previous line" },
+	{ on = "y", run = "swipe prev", desc = "Swipe to previous file" },
+	{ on = "e", run = "swipe next", desc = "Swipe to next file" },
+]
+
+[pick]
+prepend_keymap = [
+	{ on = "h", run = "arrow next", desc = "Next option" },
+	{ on = "a", run = "arrow prev", desc = "Previous option" },
+]
+
+# Text input (rename, search, ...) normal mode; insert mode types as usual
+[input]
+prepend_keymap = [
+	{ on = "y", run = "move -1",                    desc = "Move back a character" },
+	{ on = "e", run = "move 1",                     desc = "Move forward a character" },
+	{ on = "h", run = "recall 1",                   desc = "Recall next input" },
+	{ on = "a", run = "recall -1",                  desc = "Recall previous input" },
+	{ on = "l", run = "forward --end-of-word",      desc = "Move forward to the end of the current or next word" },
+	{ on = "L", run = "forward wide --end-of-word", desc = "Move forward to the end of the current or next WORD" },
+	{ on = "j", run = "yank",                       desc = "Copy selected characters" },
+	{ on = "n", run = "insert --append",                 desc = "Enter append mode" },
+	{ on = "N", run = [ "move eol", "insert --append" ], desc = "Move to the EOL, and enter append mode" },
+]
+
+[confirm]
+prepend_keymap = [
+	{ on = "h", run = "arrow next", desc = "Next line" },
+	{ on = "a", run = "arrow prev", desc = "Previous line" },
+]
+
+[help]
+prepend_keymap = [
+	{ on = "h", run = "arrow next", desc = "Next line" },
+	{ on = "a", run = "arrow prev", desc = "Previous line" },
+]

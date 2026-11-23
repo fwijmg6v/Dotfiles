@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Open a bar and a dock on every connected monitor (starts the eww daemon too).
+windows=() args=()
+i=0
+for mon in $(hyprctl -j monitors | jq -r '.[].name'); do
+  windows+=("bar:bar$i" "dock:dock$i")
+  args+=(--arg "bar$i:monitor=$mon" --arg "dock$i:monitor=$mon")
+  i=$((i + 1))
+done
+# --arg has to come after all the window names. GDK_SCALE (set for XWayland in
+# hypr/modules/monitors.lua) would pin GTK3 to scale 1 on every monitor and make
+# eww blurry on the 1.6x one, so the daemon starts without it.
+exec env -u GDK_SCALE eww open-many "${windows[@]}" "${args[@]}"

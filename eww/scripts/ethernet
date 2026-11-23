@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# First ethernet device as {"dev":"enp5s0","on":true,"conn":"Wired connection 1"}
+nmcli -t -f DEVICE,TYPE,STATE,CONNECTION device |
+  awk -F: '$2 == "ethernet" {
+             conn = $4; gsub(/["\\]/, "\\\\&", conn)
+             printf "{\"dev\":\"%s\",\"on\":%s,\"conn\":\"%s\"}\n", $1, ($3 == "connected") ? "true" : "false", conn
+             found = 1; exit
+           }
+           END { if (!found) print "{\"dev\":\"\",\"on\":false,\"conn\":\"\"}" }'
