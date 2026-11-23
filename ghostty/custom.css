@@ -1,0 +1,76 @@
+/* Ghostty's GTK chrome in the ice palette (same colours as eww/eww.scss):
+ * right-click menu, dialogs, toasts, command palette and the small overlays.
+ * Loaded by gtk-custom-css in config.ghostty. Tweak live with
+ *   GTK_DEBUG=interactive ghostty
+ * (window-theme = ghostty already colours the window from background/foreground)
+ */
+
+/* libadwaita colours: accent, popovers, dialogs, cards */
+:root {
+  --accent-color: #BCE3FF;
+  --accent-bg-color: #BCE3FF;
+  --accent-fg-color: #090A0F;
+  --destructive-color: #FF6B7E;
+  --destructive-bg-color: #FF6B7E;
+  --destructive-fg-color: #090A0F;
+  --popover-bg-color: #0E1118;
+  --popover-fg-color: #E6F0FA;
+  --dialog-bg-color: #0E1118;
+  --dialog-fg-color: #E6F0FA;
+  --card-bg-color: rgba(230, 240, 250, 0.07);
+  --border-color: rgba(230, 240, 250, 0.10);
+}
+
+/* right-click menu: like the eww power/go menus */
+popover > contents {
+  padding: 5px;
+  border-radius: 10px;
+  border: 1px solid rgba(230, 240, 250, 0.10);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+popover.menu modelbutton {
+  padding: 4px 10px;
+  border-radius: 5px;
+}
+
+popover.menu modelbutton:hover {
+  background-color: #BCE3FF;
+  color: #090A0F;
+}
+
+popover.menu separator {
+  margin: 5px 10px;
+  background-color: rgba(230, 240, 250, 0.10);
+}
+
+/* dialogs (close confirm, clipboard access, command palette) */
+dialog sheet {
+  border: 1px solid rgba(230, 240, 250, 0.10);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* toasts ("Copied to clipboard", "Reloaded the configuration") */
+toast {
+  border-radius: 10px;
+  background-color: #0E1118;
+  color: #E6F0FA;
+  border: 1px solid rgba(230, 240, 250, 0.10);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+/* overlays inside the terminal: resize size, search bar, links, key chords */
+label.resize-overlay,
+label.url-overlay,
+.search-overlay,
+.key-state-overlay {
+  background-color: #0E1118;
+  color: #E6F0FA;
+  outline-color: rgba(230, 240, 250, 0.10);
+}
+
+label.resize-overlay,
+.search-overlay,
+.key-state-overlay {
+  border-radius: 10px;
+}

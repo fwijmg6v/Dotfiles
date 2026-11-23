@@ -73,3 +73,20 @@ cursor-click-to-move = true
 mouse-hide-while-typing = true
 confirm-close-surface = false
 shell-integration = fish
+# no "this paste looks unsafe" dialog for multi-line pastes
+clipboard-paste-protection = false
+
+
+# ==========================================
+# 6. POPUPS & GTK CHROME (ice palette, like eww)
+# ==========================================
+
+# menus, dialogs and toasts take background/foreground from above
+window-theme = ghostty
+# rounded ice-styled menus, toasts and overlays (path is relative to this file)
+gtk-custom-css = custom.css
+# search matches: dim blue for the others, accent for the current one
+search-background = #8DA0B0
+search-foreground = #090A0F
+search-selected-background = #BCE3FF
+search-selected-foreground = #090A0F
