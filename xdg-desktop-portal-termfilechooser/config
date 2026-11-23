@@ -1,0 +1,12 @@
+; Terminal file picker for every portal file dialog (browsers, GTK/Qt/Electron apps).
+; Fork: https://github.com/hunkyburrito/xdg-desktop-portal-termfilechooser
+[filechooser]
+cmd=yazi-wrapper.sh
+default_dir=$HOME
+; The wrapper appends `yazi --chooser-file=...` to TERMCMD. The class is matched by
+; the "filechooser" window rule in hypr/modules/windowrules.lua (floats it).
+env=TERMCMD=ghostty --class=ghostty.filechooser -e
+; Don't drop instruction files at the save destination.
+create_help_file=0
+open_mode=suggested
+save_mode=suggested

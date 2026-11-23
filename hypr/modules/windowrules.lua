@@ -70,3 +70,12 @@ hl.window_rule({
 	},
 	immediate = true,
 })
+
+-- yazi file picker from xdg-desktop-portal-termfilechooser (class set in its config)
+hl.window_rule({
+	name = "filechooser",
+	match = { class = "ghostty\\.filechooser" },
+	float = true,
+	size = { "monitor_w * 0.6", "monitor_h * 0.6" },
+	center = true,
+})
