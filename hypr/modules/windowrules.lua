@@ -39,6 +39,14 @@ hl.layer_rule({
 	ignore_alpha = 0.3,
 })
 
+-- Same frosted glass behind fuzzel (its layer namespace is "launcher").
+hl.layer_rule({
+	name = "fuzzel-blur",
+	match = { namespace = "launcher" },
+	blur = true,
+	ignore_alpha = 0.3,
+})
+
 -- Layer rules also return a handle.
 -- local overlayLayerRule = hl.layer_rule({
 --     name  = "no-anim-overlay",
